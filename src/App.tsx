@@ -1,7 +1,11 @@
+<<<<<<< HEAD
 import { useEffect, useMemo, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import AuthPage from '@/components/AuthPage';
 import { supabase } from '@/lib/supabase';
+=======
+import { useMemo, useState } from 'react';
+>>>>>>> origin/main
 import {
   Bell,
   CalendarDays,
@@ -26,7 +30,10 @@ type NavItem = { label: string; icon: typeof Home };
 type Pro = { name: string; role: string; rating: string; price: string; image: string };
 
 const mumbaiAreas = [
+<<<<<<< HEAD
   'Panvel',
+=======
+>>>>>>> origin/main
   'Bandra West',
   'Andheri West',
   'Juhu',
@@ -59,6 +66,7 @@ const pros: Pro[] = [
 ];
 
 function App() {
+<<<<<<< HEAD
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
@@ -79,10 +87,13 @@ function App() {
 }
 
 function Dashboard({ session, onSignOut }: { session: Session; onSignOut: () => Promise<void> }) {
+=======
+>>>>>>> origin/main
   const [active, setActive] = useState('Home');
   const [search, setSearch] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
   const [notice, setNotice] = useState('');
+<<<<<<< HEAD
   const [area, setArea] = useState('Panvel');
   const [areaOpen, setAreaOpen] = useState(false);
   const [areaSearch, setAreaSearch] = useState('');
@@ -91,6 +102,12 @@ function Dashboard({ session, onSignOut }: { session: Session; onSignOut: () => 
 
   const filteredPros = useMemo(() => pros.filter((pro) => `${pro.name} ${pro.role}`.toLowerCase().includes(search.toLowerCase())), [search]);
   const filteredAreas = useMemo(() => mumbaiAreas.filter((name) => name.toLowerCase().includes(areaSearch.toLowerCase())), [areaSearch]);
+=======
+  const [area, setArea] = useState(mumbaiAreas[0]);
+  const [areaOpen, setAreaOpen] = useState(false);
+
+  const filteredPros = useMemo(() => pros.filter((pro) => `${pro.name} ${pro.role}`.toLowerCase().includes(search.toLowerCase())), [search]);
+>>>>>>> origin/main
   const showNotice = (message: string) => {
     setNotice(message);
     window.setTimeout(() => setNotice(''), 2600);
@@ -129,6 +146,7 @@ function Dashboard({ session, onSignOut }: { session: Session; onSignOut: () => 
           <div className="topbar-actions">
             <div className={`location ${areaOpen ? 'location-open' : ''}`}>
               <span>Location</span>
+<<<<<<< HEAD
               <button className="area-trigger" onClick={() => { setAreaOpen((value) => !value); setAreaSearch(''); }} aria-label="Select area" aria-expanded={areaOpen}>
                 <MapPin size={13} /> <strong>{area}, Mumbai</strong> <ChevronRight size={14} className={`area-caret ${areaOpen ? 'area-caret-open' : ''}`} />
               </button>
@@ -148,11 +166,32 @@ function Dashboard({ session, onSignOut }: { session: Session; onSignOut: () => 
             </div>
             <button className="icon-button" onClick={() => showNotice('You are all caught up.')} aria-label="Notifications"><Bell size={21} /></button>
             <button className="avatar" onClick={() => void onSignOut()} aria-label="Sign out">{avatarText}</button>
+=======
+              <button className="area-trigger" onClick={() => setAreaOpen((value) => !value)} aria-label="Select area" aria-expanded={areaOpen}>
+                <MapPin size={13} /> <strong>{area}, Mumbai</strong> <ChevronRight size={14} className={`area-caret ${areaOpen ? 'area-caret-open' : ''}`} />
+              </button>
+              {areaOpen && (
+                <ul className="area-menu" role="listbox">
+                  {mumbaiAreas.map((name) => (
+                    <li key={name}>
+                      <button className={area === name ? 'selected' : ''} onClick={() => { setArea(name); setAreaOpen(false); showNotice(`Showing professionals in ${name}, Mumbai.`); }} role="option" aria-selected={area === name}><MapPin size={14} /> {name}</button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+            <button className="icon-button" onClick={() => showNotice('You are all caught up.')} aria-label="Notifications"><Bell size={21} /></button>
+            <button className="avatar" onClick={() => setActive('Profile')} aria-label="Open profile">AR</button>
+>>>>>>> origin/main
           </div>
         </header>
 
         <main className="content">
+<<<<<<< HEAD
           <section className="welcome"><div><span className="eyebrow">Dashboard</span><h1>Good morning, {displayName}</h1></div><button className="outline-button mobile-hide" onClick={() => showNotice('Your home profile is up to date.')}>Manage home <ChevronRight size={16} /></button></section>
+=======
+          <section className="welcome"><div><span className="eyebrow">Dashboard</span><h1>Good morning, Arjun</h1></div><button className="outline-button mobile-hide" onClick={() => showNotice('Your home profile is up to date.')}>Manage home <ChevronRight size={16} /></button></section>
+>>>>>>> origin/main
           <p className="location-banner"><MapPin size={15} /> Showing home service professionals in <strong>{area}, Mumbai</strong></p>
           <div className="dashboard-grid">
             <div className="primary-column">

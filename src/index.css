@@ -1,5 +1,8 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+<<<<<<< HEAD
 @import './auth.css';
+=======
+>>>>>>> origin/main
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -35,6 +38,7 @@ button { cursor: pointer; }
 .area-trigger:hover { color: #213145; }
 .area-caret { transition: transform .2s ease; }
 .area-caret-open { transform: rotate(90deg); }
+<<<<<<< HEAD
 .area-menu { position: absolute; top: calc(100% + 10px); right: 0; z-index: 60; min-width: 230px; margin: 0; padding: 7px; border: 1px solid #c6d2e6; border-radius: 10px; background: #fff; box-shadow: 0 14px 30px #0b1c3025; animation: area-in .18s ease-out; }
 @keyframes area-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
 .area-search { display: flex; align-items: center; gap: 7px; height: 34px; margin-bottom: 5px; padding: 0 9px; border: 1px solid #c6d2e6; border-radius: 7px; color: #687285; }
@@ -49,6 +53,15 @@ button { cursor: pointer; }
 .area-menu li > button.selected { background: #0b1c30; color: #fff; }
 .area-menu li > button.selected:hover { background: #000; }
 .no-areas { padding: 12px 11px; color: #687285; font-size: 12px; }
+=======
+.area-menu { position: absolute; top: calc(100% + 10px); right: 0; z-index: 60; min-width: 210px; max-height: 280px; overflow-y: auto; margin: 0; padding: 6px; list-style: none; border: 1px solid #c6d2e6; border-radius: 10px; background: #fff; box-shadow: 0 14px 30px #0b1c3025; animation: area-in .18s ease-out; }
+@keyframes area-in { from { opacity: 0; transform: translateY(-6px); } to { opacity: 1; transform: translateY(0); } }
+.area-menu li { margin: 0; }
+.area-menu button { width: 100%; display: flex; align-items: center; gap: 9px; padding: 10px 11px; border: 0; border-radius: 7px; background: transparent; color: #344259; font-size: 13.5px; text-align: left; transition: .15s; }
+.area-menu button:hover { background: #e5eeff; color: #0b1c30; }
+.area-menu button.selected { background: #0b1c30; color: #fff; }
+.area-menu button.selected:hover { background: #000; }
+>>>>>>> origin/main
 .icon-button, .avatar { border: 0; background: transparent; color: #0b1c30; }
 .icon-button { display: grid; place-items: center; padding: 8px; border-radius: 50%; }
 .icon-button:hover { background: #e5eeff; }
