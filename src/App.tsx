@@ -281,7 +281,7 @@ function Dashboard({
                 </div>
                 <div className="appointment-card">
                   <div className="appointment-icon">
-                    <Calendar size={26} />
+                    <CalendarDays size={26} />
                   </div>
                   <div className="appointment-info">
                     <h3>Home service booking</h3>
@@ -379,5 +379,35 @@ function Dashboard({
       {notice && <div className="toast"><Check size={17} />{notice}</div>}
     </div>
   );
+  function Booking({
+  title,
+  detail,
+  rating,
+}: {
+  title: string;
+  detail: string;
+  rating: number;
+}) {
+  return (
+    <div className="booking-card">
+      <div className="booking-top">
+        <div>
+          <h3>{title}</h3>
+          <p>{detail}</p>
+        </div>
+        <span className="status">Completed</span>
+      </div>
+      <div className="booking-rating">
+        {Array.from({ length: 5 }, (_, index) => (
+          <Star
+            key={index}
+            size={15}
+            fill={index < rating ? 'currentColor' : 'none'}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
 }
 export default App;
