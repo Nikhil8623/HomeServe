@@ -1,9 +1,10 @@
-
 import { useEffect, useMemo, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import AuthPage from '@/components/AuthPage';
+import BookingsPage from '@/components/BookingsPage';
+import FindProsPage from '@/components/FindProsPage';
+import MessagesPage from '@/components/MessagesPage';
 import { supabase } from '@/lib/supabase';
-
 import {
   Bell,
   CalendarDays,
@@ -29,16 +30,15 @@ type Pro = { name: string; role: string; rating: string; price: string; image: s
 
 const mumbaiAreas = [
   'Panvel',
-  'Vashi',
-  'Nerul',
-  'Airoli',
-  'Thane',
-  'Kopaikhairane',
-  'Dombivali',
-  'Kalyan',
-  'Titwala',
+  'Bandra West',
+  'Andheri West',
+  'Juhu',
+  'Powai',
+  'Worli',
+  'Dadar',
+  'Goregaon',
+  'Colaba',
 ];
-
 
 const navItems: NavItem[] = [
   { label: 'Home', icon: Home },
@@ -61,24 +61,16 @@ const pros: Pro[] = [
   { name: 'Imran K.', role: 'AC Service Specialist', rating: '4.8', price: '₹599', image: 'https://lh3.googleusercontent.com/aida-public/AB6AXuBpkFRZR7nxiXZyWPpU62hxmQTo_G17rdQ4mBOFo955cUzrkmIEpAHRf8DH-MVqnKDWRBYlInQq9OImLiC2EBZeh66LA_6Kbhfk8lmpKUnvpA1Q-dBpZkrfNwkYTSOZaTZv51ZuAn0v6Yf-pf1OrU1w2VYVx5Qm_UJ_3azB8d_4gUpGV2dYSzgfMc3HUC1zGDYJTN_H3g45WXdrjI-uqIZS-o0l9yovxwI2NBH3RW1zjX0x4C0Ao4kd' },
 ];
 
-
 function App() {
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
     if (!supabase) return;
     let mounted = true;
-
     supabase.auth.getSession().then(({ data: { session: currentSession } }) => {
       if (mounted) setSession(currentSession);
     });
-
-    const {
-      data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, nextSession) => {
-      setSession(nextSession);
-    });
-
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, nextSession) => setSession(nextSession));
     return () => {
       mounted = false;
       subscription.unsubscribe();
@@ -86,24 +78,10 @@ function App() {
   }, []);
 
   if (!session) return <AuthPage onComplete={() => undefined} />;
-
-  return (
-    <Dashboard
-      session={session}
-      onSignOut={() =>
-        supabase ? supabase.auth.signOut().then(() => undefined) : Promise.resolve()
-      }
-    />
-  );
+  return <Dashboard session={session} onSignOut={() => supabase ? supabase.auth.signOut().then(() => undefined) : Promise.resolve()} />;
 }
 
-function Dashboard({
-  session,
-  onSignOut,
-}: {
-  session: Session;
-  onSignOut: () => Promise<void>;
-}) {
+function Dashboard({ session, onSignOut }: { session: Session; onSignOut: () => Promise<void> }) {
   const [active, setActive] = useState('Home');
   const [search, setSearch] = useState('');
   const [menuOpen, setMenuOpen] = useState(false);
@@ -111,31 +89,16 @@ function Dashboard({
   const [area, setArea] = useState('Panvel');
   const [areaOpen, setAreaOpen] = useState(false);
   const [areaSearch, setAreaSearch] = useState('');
-
   const displayName = session.user.user_metadata.full_name || 'Arjun';
-  const avatarText = displayName
-    .split(' ')
-    .map((part: string) => part[0])
-    .join('')
-    .slice(0, 2)
-    .toUpperCase();
+  const avatarText = displayName.split(' ').map((part: string) => part[0]).join('').slice(0, 2).toUpperCase();
+  const userId = session.user.id;
 
-  const filteredPros = useMemo(
-    () =>
-      pros.filter((pro) =>
-        `${pro.name} ${pro.role}`.toLowerCase().includes(search.toLowerCase())
-      ),
-    [search]
-  );
-
-  const filteredAreas = useMemo(
-    () =>
-      mumbaiAreas.filter((name) =>
-        name.toLowerCase().includes(areaSearch.toLowerCase())
-      ),
-    [areaSearch]
-  );
-
+  const filteredPros = useMemo(() => pros.filter((pro) => `${pro.name} ${pro.role}`.toLowerCase().includes(search.toLowerCase())), [search]);
+  const filteredAreas = useMemo(() => mumbaiAreas.filter((name) => name.toLowerCase().includes(areaSearch.toLowerCase())), [areaSearch]);
+  const showNotice = (message: string) => {
+    setNotice(message);
+    window.setTimeout(() => setNotice(''), 2600);
+  };
 
   return (
     <div className="app-shell">
@@ -170,244 +133,63 @@ function Dashboard({
           <div className="topbar-actions">
             <div className={`location ${areaOpen ? 'location-open' : ''}`}>
               <span>Location</span>
-              <button
-                className="area-trigger"
-                onClick={() => {
-                  setAreaOpen((value) => !value);
-                  setAreaSearch('');
-                }}
-                aria-label="Select area"
-                aria-expanded={areaOpen}
-              >
-                <MapPin size={13} />
-                <strong>{area}, Mumbai</strong>
-                <ChevronRight
-                  size={14}
-                  className={`area-caret ${areaOpen ? 'area-caret-open' : ''}`}
-                />
+              <button className="area-trigger" onClick={() => { setAreaOpen((value) => !value); setAreaSearch(''); }} aria-label="Select area" aria-expanded={areaOpen}>
+                <MapPin size={13} /> <strong>{area}, Mumbai</strong> <ChevronRight size={14} className={`area-caret ${areaOpen ? 'area-caret-open' : ''}`} />
               </button>
-
               {areaOpen && (
                 <div className="area-menu">
-                  <label className="area-search">
-                    <Search size={15} />
-                    <input
-                      autoFocus
-                      value={areaSearch}
-                      onChange={(event) => setAreaSearch(event.target.value)}
-                      placeholder="Search Mumbai areas"
-                      aria-label="Search Mumbai areas"
-                    />
-                    {areaSearch && (
-                      <button
-                        onClick={() => setAreaSearch('')}
-                        aria-label="Clear area search"
-                      >
-                        <X size={14} />
-                      </button>
-                    )}
-                  </label>
-
+                  <label className="area-search"><Search size={15} /><input autoFocus value={areaSearch} onChange={(event) => setAreaSearch(event.target.value)} placeholder="Search Mumbai areas" aria-label="Search Mumbai areas" />{areaSearch && <button onClick={() => setAreaSearch('')} aria-label="Clear area search"><X size={14} /></button>}</label>
                   <ul role="listbox">
                     {filteredAreas.map((name) => (
                       <li key={name}>
-                        <button
-                          className={area === name ? 'selected' : ''}
-                          onClick={() => {
-                            setArea(name);
-                            setAreaOpen(false);
-                            setAreaSearch('');
-                            showNotice(`Showing professionals in ${name}, Mumbai.`);
-                          }}
-                          role="option"
-                          aria-selected={area === name}
-                        >
-                          <MapPin size={14} /> {name}
-                        </button>
+                        <button className={area === name ? 'selected' : ''} onClick={() => { setArea(name); setAreaOpen(false); setAreaSearch(''); showNotice(`Showing professionals in ${name}, Mumbai.`); }} role="option" aria-selected={area === name}><MapPin size={14} /> {name}</button>
                       </li>
                     ))}
-                    {filteredAreas.length === 0 && (
-                      <li className="no-areas">No areas found</li>
-                    )}
+                    {filteredAreas.length === 0 && <li className="no-areas">No areas found</li>}
                   </ul>
                 </div>
               )}
-
             </div>
-            <button
-              className="icon-button"
-              onClick={() => showNotice('You are all caught up.')}
-              aria-label="Notifications"
-            >
-              <Bell size={21} />
-            </button>
-            <button
-              className="avatar"
-              onClick={() => void onSignOut()}
-              aria-label="Sign out"
-            >
-              {avatarText}
-            </button>
+            <button className="icon-button" onClick={() => showNotice('You are all caught up.')} aria-label="Notifications"><Bell size={21} /></button>
+            <button className="avatar" onClick={() => void onSignOut()} aria-label="Sign out">{avatarText}</button>
           </div>
         </header>
 
         <main className="content">
-          <section className="welcome">
-            <div>
-              <span className="eyebrow">Dashboard</span>
-              <h1>Good morning, {displayName}</h1>
-            </div>
-            <button
-              className="outline-button mobile-hide"
-              onClick={() => showNotice('Your home profile is up to date.')}
-            >
-              Manage home <ChevronRight size={16} />
-            </button>
-          </section>
-
-          <p className="location-banner">
-            <MapPin size={15} />
-            Showing home service professionals in <strong>{area}, Mumbai</strong>
-          </p>
-
-                    <div className="dashboard-grid">
+          {active === 'Bookings' ? (
+            <BookingsPage userId={userId} onExploreServices={() => setActive('Find Pros')} />
+          ) : active === 'Messages' ? (
+            <MessagesPage userId={userId} onOpenBooking={() => setActive('Bookings')} />
+          ) : active === 'Find Pros' ? (
+            <FindProsPage
+              userId={userId}
+              defaultArea={area}
+              onBookingCreated={() => setActive('Bookings')}
+              onOpenMessages={() => setActive('Messages')}
+            />
+          ) : (
+          <>
+          <section className="welcome"><div><span className="eyebrow">Dashboard</span><h1>Good morning, {displayName}</h1></div><button className="outline-button mobile-hide" onClick={() => showNotice('Your home profile is up to date.')}>Manage home <ChevronRight size={16} /></button></section>
+          <p className="location-banner"><MapPin size={15} /> Showing home service professionals in <strong>{area}, Mumbai</strong></p>
+          <div className="dashboard-grid">
             <div className="primary-column">
-              <section className="section appointment-section">
-                <div className="section-heading">
-                  <div>
-                    <span className="eyebrow">Your home</span>
-                    <h2>Upcoming appointment</h2>
-                  </div>
-                </div>
-                <div className="appointment-card">
-                  <div className="appointment-icon">
-                    <CalendarDays size={26} />
-                  </div>
-                  <div className="appointment-info">
-                    <h3>Home service booking</h3>
-                    <p>Book a trusted professional for your home.</p>
-                  </div>
-                  <button className="dark-button" onClick={() => setActive('Explore Services')}>
-                    Book a service <ChevronRight size={16} />
-                  </button>
-                </div>
-              </section>
-
-              <section className="section">
-                <div className="section-heading">
-                  <div>
-                    <span className="eyebrow">What do you need?</span>
-                    <h2>Quick Actions</h2>
-                  </div>
-                </div>
-                <div className="service-grid">
-                  {[
-                    { name: 'Electrician', icon: Zap },
-                    { name: 'Plumber', icon: Wrench },
-                    { name: 'Carpenter', icon: Hammer },
-                    { name: 'Cleaning', icon: Sparkles },
-                  ].map(({ name, icon: Icon }) => (
-                    <button key={name} className="service-card" onClick={() => { setSearch(name); setActive('Explore Services'); }}>
-                      <span className="service-icon"><Icon size={23} /></span>
-                      {name}
-                    </button>
-                  ))}
-                </div>
-              </section>
-
-              <section className="section recommendations">
-                <div className="section-heading">
-                  <div>
-                    <span className="eyebrow">Handpicked for you</span>
-                    <h2>Recommended professionals</h2>
-                  </div>
-                  <button className="text-button" onClick={() => setActive('Explore Services')}>
-                    View all <ChevronRight size={16} />
-                  </button>
-                </div>
-                <div className="pro-grid">
-                  {filteredPros.map((pro) => (
-                    <article className="pro-card" key={pro.name}>
-                      <img src={pro.image} alt={pro.name} />
-                      <div className="pro-copy">
-                        <h3>{pro.name}</h3>
-                        <p>{pro.role}</p>
-                      </div>
-                      <div className="pro-footer">
-                        <span className="rating"><Star size={15} fill="currentColor" /> {pro.rating}</span>
-                        <span className="price">₹{pro.price}<span className="from">/visit</span></span>
-                      </div>
-                      <button className="small-button pro-cta" onClick={() => showNotice(`Booking request for ${pro.name}`)}>
-                        Book now
-                      </button>
-                    </article>
-                  ))}
-                  {filteredPros.length === 0 && <p className="empty-state">No professionals found. Try another search.</p>}
-                </div>
-              </section>
+              <section className="section appointment-section"><div className="section-heading"><h2>Your Next Appointment</h2><span className="section-kicker">Tomorrow</span></div><div className="appointment-card"><div className="appointment-icon"><Wrench size={25} /></div><div className="appointment-info"><h3>Plumbing Inspection</h3><p>Tomorrow, 10:00 AM <span>•</span> with Suresh K. <span>•</span> ₹499</p></div><button className="dark-button" onClick={() => setActive('Bookings')}>Manage Booking</button></div></section>
+              <section className="section"><div className="section-heading"><h2>Quick Actions</h2><button className="text-button" onClick={() => setActive('Find Pros')}>View all services <ChevronRight size={15} /></button></div><div className="service-grid">{services.map(({ label, icon: Icon }) => <button className="service-card" key={label} onClick={() => setActive('Find Pros')}><span className="service-icon"><Icon size={22} /></span><span>{label}</span></button>)}</div></section>
+              <section className="section recommendations"><div className="section-heading"><h2>Recommended for You</h2><button className="text-button mobile-hide" onClick={() => setActive('Find Pros')}>Find more pros <ChevronRight size={15} /></button></div><div className="pro-grid">{filteredPros.map((pro) => <article className="pro-card" key={pro.name}><img src={pro.image} alt={`${pro.name}, ${pro.role}`} /><div className="pro-copy"><h3>{pro.name}</h3><p>{pro.role}</p></div><div className="pro-footer"><span className="price"><span className="from">from</span> {pro.price}</span><span className="rating"><Star size={15} fill="currentColor" /> {pro.rating}</span></div><button className="small-button pro-cta" onClick={() => setActive('Find Pros')}>View Profile</button></article>)}{filteredPros.length === 0 && <div className="empty-state">No professionals match “{search}”.</div>}</div></section>
             </div>
-
-            <aside className="right-column">
-              <section className="section recent-section">
-                <div className="section-heading">
-                  <div>
-                    <span className="eyebrow">Your activity</span>
-                    <h2>Recent bookings</h2>
-                  </div>
-                  <button className="history-button" onClick={() => setActive('My Bookings')}>History <ChevronRight size={15} /></button>
-                </div>
-                <Booking title="Home cleaning" detail="Completed recently" rating={5} />
-                <Booking title="Electrical repair" detail="Completed recently" rating={4} />
-              </section>
-
-              <section className="section">
-                <div className="section-heading">
-                  <div>
-                    <span className="eyebrow">Need assistance?</span>
-                    <h2>We're here to help</h2>
-                  </div>
-                </div>
-                <p className="help-copy">Find the right home professional for your needs.</p>
-                <button className="dark-button" onClick={() => setActive('Help & Support')}>
-                  Get help <ChevronRight size={16} />
-                </button>
-              </section>
-            </aside>
+            <aside className="right-column"><section className="section recent-section"><div className="section-heading"><h2>Recent Bookings</h2><button className="more-button" aria-label="More booking options">•••</button></div><div className="booking-list"><Booking title="Deep House Cleaning" detail="Oct 12 • Priya Clean Care • ₹799" rating={5} /><Booking title="AC Servicing" detail="Sep 05 • CoolBreeze AC Service • ₹599" rating={4} /></div><button className="history-button" onClick={() => setActive('Bookings')}>View full history <ChevronRight size={15} /></button></section><section className="plus-card"><div className="plus-decoration" /><div className="plus-icon"><Sparkles size={24} /></div><h3>HomeServe Plus</h3><p>Get 10% off all bookings and priority support.</p><span className="plus-price">Starts at ₹199/month</span><button className="dark-button" onClick={() => showNotice('HomeServe Plus details are coming right up.')}>Upgrade Now</button></section></aside>
           </div>
+          </>
+          )}
         </main>
       </div>
       {notice && <div className="toast"><Check size={17} />{notice}</div>}
     </div>
   );
-  function Booking({
-  title,
-  detail,
-  rating,
-}: {
-  title: string;
-  detail: string;
-  rating: number;
-}) {
-  return (
-    <div className="booking-card">
-      <div className="booking-top">
-        <div>
-          <h3>{title}</h3>
-          <p>{detail}</p>
-        </div>
-        <span className="status">Completed</span>
-      </div>
-      <div className="booking-rating">
-        {Array.from({ length: 5 }, (_, index) => (
-          <Star
-            key={index}
-            size={15}
-            fill={index < rating ? 'currentColor' : 'none'}
-          />
-        ))}
-      </div>
-    </div>
-  );
 }
+
+function Booking({ title, detail, rating }: { title: string; detail: string; rating: number }) {
+  return <div className="booking-card"><div className="booking-top"><div><h3>{title}</h3><p>{detail}</p></div><span className="status">Completed</span></div><div className="booking-rating">{Array.from({ length: 5 }, (_, index) => <Star key={index} size={15} fill={index < rating ? 'currentColor' : 'none'} />)}</div></div>;
 }
+
 export default App;
