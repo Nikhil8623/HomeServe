@@ -15,6 +15,7 @@ import {
   formatChatTime,
   formatMessageTime,
 } from '@/lib/messaging';
+import './messages.css';
 import { useMessaging } from '@/lib/useMessaging';
 
 type FilterKey = 'All' | 'Unread' | 'Active';

@@ -1,4 +1,6 @@
 import { FormEvent, useMemo, useState } from 'react';
+import './findpros.css';
+
 import {
   ArrowDownUp,
   BadgeCheck,

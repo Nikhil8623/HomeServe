@@ -30,6 +30,7 @@ import {
   statusOrder,
 } from '@/lib/bookings';
 import { useBookings } from '@/lib/useBookings';
+import './bookings.css';
 
 type SortKey = 'newest' | 'oldest' | 'appointment';
 type StatusFilter = 'All' | BookingStatus;

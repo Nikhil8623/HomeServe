@@ -63,10 +63,9 @@ export default function AuthPage({ onComplete }: AuthPageProps) {
     setMessage('');
 
     try {
-      if (isSignUp && role !== 'user') {
-        setMessage(
-          'Admin and worker accounts must be created by the platform administrator. Select User login to register.'
-        );
+      // Public sign-up may create customer or worker accounts, never admin accounts.
+      if (isSignUp && role === 'admin') {
+        setMessage('Admin accounts can only be created by the platform administrator.');
         return;
       }
 
@@ -84,6 +83,7 @@ export default function AuthPage({ onComplete }: AuthPageProps) {
             email: email.trim(),
             password,
             phone: '',
+            role: role === 'worker' ? 'WORKER' : 'CUSTOMER',
           }
         : {
             email: email.trim(),
@@ -131,7 +131,7 @@ export default function AuthPage({ onComplete }: AuthPageProps) {
       const expectedRole =
         role === 'user' ? 'CUSTOMER' : role.toUpperCase();
 
-      if (!isSignUp && normalizedRole !== expectedRole) {
+      if (normalizedRole && normalizedRole !== expectedRole) {
         setMessage(
           `This account is not registered as ${selectedRole.label.replace(
             ' login',
@@ -154,7 +154,7 @@ export default function AuthPage({ onComplete }: AuthPageProps) {
           typeof userData.email === 'string'
             ? userData.email
             : email.trim(),
-        role: rawRole || expectedRole,
+        role: normalizedRole || (isSignUp && role === 'user' ? 'CUSTOMER' : expectedRole),
         ...(token ? { token } : {}),
       } as AuthUser;
 

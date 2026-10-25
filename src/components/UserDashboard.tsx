@@ -4,6 +4,10 @@ import ProfilePage from '@/components/ProfilePage';
 import SettingsPage from '@/components/SettingsPage';
 import NotificationsPage from '@/components/NotificationsPage';
 import SupportPage from '@/components/SupportPage';
+import MessagesPage from '@/components/MessagesPage';
+import BookingsPage from '@/components/BookingsPage';
+import FindProsPage from '@/components/FindProsPage';
+
 import type { AuthUser } from '@/App';
 import {
   Bell,
@@ -282,14 +286,7 @@ export default function UserDashboard({
               onClick={() => {
                 setActive(label);
                 setMenuOpen(false);
-
-                if (label === 'Bookings') {
-                  showNotice('Your booking history is displayed on this dashboard.');
-                } else if (label === 'Messages') {
-                  showNotice('Messages will be available here.');
-                } else if (label === 'Profile') {
-                  setNotice('');
-                }
+                setNotice('');
               }}
             >
               <Icon
@@ -464,7 +461,37 @@ export default function UserDashboard({
         </header>
 
         <main className="content">
-          {active === 'Profile' ? (
+          {active === 'Bookings' ? (
+            <BookingsPage
+              userId={user.id != null ? String(user.id) : undefined}
+              onExploreServices={() => {
+                setActive('Find Pros');
+                setSearch('');
+                setNotice('');
+              }}
+            />
+          ) : active === 'Find Pros' ? (
+            <FindProsPage
+              userId={user.id != null ? String(user.id) : undefined}
+              defaultArea={area}
+              onBookingCreated={() => {
+                setActive('Bookings');
+                setNotice('Your booking has been created.');
+              }}
+              onOpenMessages={() => {
+                setActive('Messages');
+                setNotice('');
+              }}
+            />
+          ) : active === 'Messages' ? (
+            <MessagesPage
+              userId={user.id != null ? String(user.id) : undefined}
+              onOpenBooking={(bookingRef) => {
+                setActive('Bookings');
+                setNotice(`Opening booking ${bookingRef}.`);
+              }}
+            />
+          ) : active === 'Profile' ? (
             <ProfilePage user={user} />
           ) : active === 'Settings' ? (
             <SettingsPage user={user} />

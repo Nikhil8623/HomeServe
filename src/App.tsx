@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import AuthPage from '@/components/AuthPage';
 import UserDashboard from '@/components/UserDashboard';
+import WorkerDashboard from '@/components/WorkerDashboard';
 
 export type AuthUser = {
   id?: number | string;
@@ -62,6 +63,10 @@ function App() {
 
   if (role === 'CUSTOMER' || role === 'USER') {
     return <UserDashboard user={user} onSignOut={signOut} />;
+  }
+
+  if (role === 'WORKER') {
+    return <WorkerDashboard user={user} onSignOut={signOut} />;
   }
 
   return (
