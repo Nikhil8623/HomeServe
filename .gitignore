@@ -1,35 +1,51 @@
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
-node_modules
-dist
-dist-ssr
-*.local
-
-.vscode/*
-!.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
-.env
-
-# Environment variables and secrets
+﻿# Environment files and secrets
 .env
 .env.*
 !.env.example
+!**/.env.example
 
-# Build output and dependencies
-node_modules/
-dist/
-dist-ssr/
-target/
-.gradle/
+# Local Spring configuration
+**/application-local.properties
+**/application-prod.properties
+
+# Frontend - Node and Vite
+**/node_modules/
+**/dist/
+**/dist-ssr/
+**/.vite/
+npm-debug.log*
+yarn-debug.log*
+pnpm-debug.log*
+
+# Backend - Java and Maven
+**/target/
+**/build/
+
+# Logs
+*.log
+logs/
+
+# IDE and editor files
+.idea/
+.vscode/
+*.iml
+*.suo
+*.user
+
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Local archives and backups
+*.zip
+*.rar
+*.7z
+*.bak
+*.old
+
+# Private keys and certificates
+*.pem
+*.key
+*.p12
+*.pfx
